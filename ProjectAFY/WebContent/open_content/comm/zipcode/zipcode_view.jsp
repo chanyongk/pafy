@@ -21,13 +21,13 @@ int total = (Integer)request.getAttribute("total");
 	</head>
 	<body>
 		<div>
-			<div class="wait" id="aa" style="display:none">
+			<div class="wait" style="display:none">
 				<div class="icon">
 					<span class="text">데이터 로딩중입니다.</span>
 				</div>
 			</div>
 			<p class="txt padding_l20">
-				<img src="images/street_txt.gif" alt=" 도로명, 건물명, 지번에 대해 통합검색이 가능합니다. (예: 반포대로 58, 국립중앙박물관, 삼성동 25)" />
+				<img src="<%=(request.getRequestURL()+"").replaceAll("zipcode_view.jsp", "")%>images/street_txt.gif" alt=" 도로명, 건물명, 지번에 대해 통합검색이 가능합니다. (예: 반포대로 58, 국립중앙박물관, 삼성동 25)" />
 			</p>
 			<form action="<%=(request.getRequestURL()+"").replaceAll("zipcode_view.jsp", "")%>zipcode.jsp" method="get" onsubmit="return fnSearch(this);">
 				<p>
@@ -37,7 +37,7 @@ int total = (Integer)request.getAttribute("total");
 				</p>
 				<div class="input">
 					<input type="text" value="<%=srchwrd%>" name="srchwrd" id="srchwrd" />
-					<input type="image" src="images/btn_street.gif" alt="검색" />
+					<input type="image" src="<%=(request.getRequestURL()+"").replaceAll("zipcode_view.jsp", "")%>images/btn_street.gif" alt="검색" />
 				</div>
 			</form>
 			<%if(zipcodeList.size()>0){%>

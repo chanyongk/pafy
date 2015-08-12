@@ -5,7 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.StringTokenizer;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class AfyUtil {
+	private static String DEFAULT_ENCODING = "UTF-8";
 	public static String[] toArray(String str, String delim){
 		StringTokenizer st = new StringTokenizer(str, delim);
 		String[] result = new String[st.countTokens()];
@@ -118,5 +121,59 @@ public class AfyUtil {
     	}catch(Exception e){
     		return null;
     	}
-    } 
+    }
+	public static String toString(HttpServletRequest request, String value){
+		return toStringMethodDivChange(request, toString(request.getParameter(value)));
+	}
+	public static String toStringHtml(HttpServletRequest request, String value){
+		return htmlSpecialChars(toString(request, value));
+	}
+	public static String toStringYmd(HttpServletRequest request, String value){
+		return toStringYmd(toString(request, value));
+	}
+	private static String toStringMethodDivChange(HttpServletRequest request, String value){
+		return toStringMethodDivChange(request.getContentType(), request.getMethod(), value);
+	}
+	private static String toStringMethodDivChange(String content_type, String form_type, String value){
+		if(toString(content_type).indexOf("multipart/form-data")>-1){ 	// multipart/form-data
+			return toKor(toString(value));	// Dev
+		}else if(form_type.equals("GET")){								// GET
+			return toString(value);			// Dev
+		}else{															// POST
+			return toString(value);			// Dev
+		}
+	}
+	public static String toKor(String value){
+		String str = "";
+		if(value!=null && !value.equals("")){
+			try{
+				str = new String(value.getBytes("ISO-8859-1"), DEFAULT_ENCODING);
+				//str = new String(value.getBytes("ISO-8859-1"), "UTF-8");
+			}catch(java.io.UnsupportedEncodingException e){
+				e.printStackTrace();
+			}
+		}
+		return str;
+	}
+	private static String htmlSpecialChars(String s){
+		StringBuffer buffer = new StringBuffer();
+		StringTokenizer st = new StringTokenizer(s, "&\"<>", true);
+		String token;
+		while(st.hasMoreTokens()) {
+			token = st.nextToken();
+			switch(token.charAt(0)) {
+			case '&':	buffer.append("&amp;"); break;
+			case '\"':	buffer.append("&quot;"); break;
+			case '<':	buffer.append("&lt;"); break;
+			case '>':	buffer.append("&gt;"); break;
+			default:	buffer.append(token);
+			}
+		}
+		return buffer.toString();
+	}
+	public static String toStringYmd(String value){
+		String cfinput = "";
+		try{cfinput = new SimpleDateFormat("yyyy-MM-dd").format(Timestamp.valueOf(value + " 00:00:00"));}catch(Exception e){}
+		return value.equals(cfinput)&&cfinput.length()>0 ? toString(value) : "";
+	}
 }

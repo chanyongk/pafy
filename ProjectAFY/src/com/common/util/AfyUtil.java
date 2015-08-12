@@ -1,9 +1,12 @@
 package com.common.util;
 
+import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -176,4 +179,130 @@ public class AfyUtil {
 		try{cfinput = new SimpleDateFormat("yyyy-MM-dd").format(Timestamp.valueOf(value + " 00:00:00"));}catch(Exception e){}
 		return value.equals(cfinput)&&cfinput.length()>0 ? toString(value) : "";
 	}
+	public static int toInt(HttpServletRequest request,String value,int revalue){
+		return toInt(request.getParameter(value),revalue);
+	}
+	public static int toInt(String value,int revalue){
+		int temp = toInt(value);
+		return temp!=0?temp:revalue;
+	}
+	public static int toInt(HttpServletRequest request,String value){
+		return toInt(request.getParameter(value));
+	}
+	public static int toInt(String value){
+		int to_int = 0;
+		try{to_int = Integer.parseInt(replaceAll(value,",",""));}catch(Exception e){}
+		return to_int;
+	}
+
+	public static String toString(HttpServletRequest request,String value,String revalue){
+		return toString(toString(request,value),revalue);
+	}
+	public static String toString(String value,String revalue){
+		return toString(value).length()>0?value:revalue;
+	}
+
+	public static String[] toStr_array(String value,String split_symbol,int max_array_size){
+		String[] str_array = new String[max_array_size];
+		for(int i=0;i<max_array_size;i++){
+			str_array[i]="";
+		}
+		String[] temp_array = toStr_array(value,split_symbol);
+		for(int i=0;i<temp_array.length;i++){
+			try{
+				str_array[i]=temp_array[i];
+			}catch(Exception e){}
+		}
+		return str_array;
+	}
+	public static String[] toStr_array(String value,String split_symbol){
+		return replaceAll(value,split_symbol,"##d##i##v##").split("##d##i##v##");
+	}
+
+	public static String tagClean(String s){
+		if(s==null){return "";}		
+		StringBuffer textbuff = new StringBuffer();
+		try{
+			Matcher m;
+			String[] html_array = split(s,"\n");
+			for(String str:html_array){
+				m = Patterns.IMAGEALT.matcher(str);
+				if(m.find()){str = str+m.group(1);}				
+				m = Patterns.SCRIPTS.matcher(str);
+				str = m.replaceAll("");
+				m = Patterns.STYLE.matcher(str);
+				str = m.replaceAll("");
+				m = Patterns.TAGS.matcher(str);
+				str = m.replaceAll("");
+				m = Patterns.ENTITY_REFS.matcher(str);
+				str = m.replaceAll("");
+				m = Patterns.WHITESPACE.matcher(str);
+				str = m.replaceAll(" ");
+				textbuff.append(str);
+			}
+		}catch(Exception e){}
+		return textbuff.toString();
+	}
+
+	private static String[] split(String value,String split_symbol){
+		return replaceAll(value,split_symbol,"##d##i##v##").split("##d##i##v##");
+	}
+
+	private static interface Patterns{
+		@SuppressWarnings("unused")
+		public static final Pattern nTAGS = Pattern.compile("<\\w+\\s+[^<]*\\s*>");
+		public static final Pattern SCRIPTS = Pattern.compile("<(no)?script[^>]*>.*?</(no)?script>",Pattern.DOTALL);
+		public static final Pattern STYLE = Pattern.compile("<style[^>]*>.*</style>",Pattern.DOTALL);
+		public static final Pattern TAGS = Pattern.compile("<(\"[^\"]*\"|\'[^\']*\'|[^\'\">])*>");
+		public static final Pattern ENTITY_REFS = Pattern.compile("&[^;]+;");
+		public static final Pattern WHITESPACE = Pattern.compile("\\s\\s+");
+		public static final Pattern IMAGEALT = Pattern.compile("<img[^>]*alt=[\"']?([^>\"']+)[\"']?[^>]*>");
+	}
+
+	public static String toParamStrHtml(HttpServletRequest request,String addSymbol,String names){
+		return htmlSpecialChars(toParamStr(request,addSymbol,names,"&"));
+	}
+
+	public static String toParamStr(HttpServletRequest request,String addSymbol,String names,String start_symbol){
+		String[] name_array = names.split(",");
+		try{
+			StringBuffer param = new StringBuffer();
+			for(int i=0;i<name_array.length;i++){
+				param.append(toString(request,name_array[i]).equals("")?"":addSymbol+name_array[i]+"="+encode(toString(request,name_array[i])));
+			}
+			return start_symbol + param.toString().substring(1);
+		}catch(Exception e){
+			return "";
+		}
+	}
+
+	public static String toParamValuesAddSymbolStr(HttpServletRequest request,String name,String addSymbol){
+		StringBuffer param_value_str = new StringBuffer();
+		try{
+			String[] param_value_array = request.getParameterValues(name);
+			String content_type = request.getContentType();
+			String form_type = request.getMethod();
+			
+			if(param_value_array!=null){
+				for(int i=0;i<param_value_array.length;i++){
+					param_value_str.append(toStringMethodDivChange(content_type,form_type,param_value_array[i]));
+					if(i<param_value_array.length-1){
+						param_value_str.append(addSymbol);
+					}
+				}
+			}
+		}catch(Exception e){
+			param_value_str.append(toString(request.getParameter(name)));
+		}
+		return param_value_str.toString();
+	}
+	public static String encode(String value,String encoding){
+		String result = "";
+		try{result = URLEncoder.encode(value,encoding);}catch (Exception e){e.printStackTrace();}
+		return result;
+	}
+	public static String encode(String value){
+		return encode(value,DEFAULT_ENCODING);
+	}
+
 }

@@ -71,6 +71,7 @@ int total = (Integer)request.getAttribute("total");
 				<div class="no_address">검색 결과가 없습니다.</div>
 			<%}%>
 		</div>
+
 		<script type="text/javascript">
 			$('.pages>.pageBtn>a').click(function(){
 				$('.wait').css("display","block");

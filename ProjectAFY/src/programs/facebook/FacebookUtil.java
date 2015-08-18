@@ -1,26 +1,36 @@
-package programs.sns;
+package programs.facebook;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import org.json.simple.*;
-import org.json.simple.parser.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
-import com.common.util.*;
+import com.common.util.AfyUtil;
 
-public class FacebookJson{
-	/******************************Image Save Path******************************/
-	private static String savePath = "D:/temp/";
-	private static Boolean isSave = false;
+public class FacebookUtil {
+	private static String savePath = "D:/temp/";//Save directory
+	private static Boolean isSave = false;//Save status
+	private static String appId = "556185237786210";
+	private static String fbSecretKey = "42a976250600e2f8fe3be94592082514";
+	private static String timelineJson = "https://graph.facebook.com/v2.2/afy0817?fields=picture,likes,posts.limit(10){message,link,object_id}&access_token="+appId+"|"+fbSecretKey;
+	private static int timeout = 3000;
 	private static File file = new File(savePath);
+
 	/******************************************************************************
-	* 해당 디렉토리 파일 전체삭제
+	* @Warning Delete all the files in savePath
 	* @param String,String,String
 	* @return boolean
 	* @since 2015-04-19
@@ -34,7 +44,7 @@ public class FacebookJson{
 	}
 
 	/******************************************************************************
-	* 이미지 URL을 실제 이미지 URL로 변환 후 해당이미지 저장
+	* Save the url's image file
 	* @param String,String,String
 	* @return boolean
 	* @since 2015-04-19
@@ -71,15 +81,14 @@ public class FacebookJson{
 
 	/******************************************************************************
 	* url 커넥션 설정 후 url에 대한 상태값이 200일때 url 내용을 리턴 그렇지 않을때 null 리턴
-	* @param String,int
 	* @return InputStream
 	* @since 2014-11-13
 	* @afy0817 : afy0817@gmail.com
 	******************************************************************************/
-	public static InputStream urlCon(String url,int timeout){
+	public static InputStream urlCon(){
 		InputStream result = null;
 		try{
-			URL jsonUrl = new URL(url);
+			URL jsonUrl = new URL(timelineJson);
 			HttpURLConnection urlCon = (HttpURLConnection)jsonUrl.openConnection();
 			urlCon.setRequestMethod("GET");
 			urlCon.setUseCaches(false);
@@ -97,31 +106,29 @@ public class FacebookJson{
 
 	/******************************************************************************
 	* urlCon 에서 받아온 값이 null 이 아닐때 받아온 값(json형식) 파싱 후 리턴
-	* @param String,int
 	* @return List<HashMap<String,String>>
 	* @since 2014-11-13
 	* @afy0817 : afy0817@gmail.com
 	******************************************************************************/
-	public static List<HashMap<String,String>> getFacebookCon(String url, int timeout){
-		List<HashMap<String, String>> result = null;
-		if(urlCon(url,timeout)!=null){result=fbArr(urlCon(url,timeout),"UTF-8");}
+	public static List<FacebookVo> getFacebookCon(){
+		List<FacebookVo> result = null;
+		if(urlCon()!=null){result=fbVo(urlCon(),"UTF-8");}
 		return result;
 	}
 
 	/******************************************************************************
 	* urlCon 에서 받아온 값(Json형식)을 받아온 인코딩 값으로 파싱 후 List<HashMap<String,String>> 으로 리턴
-	* 
 	* @param InputStream,String,boolean
 	* @return List<HashMap<String,String>>
 	* @since 2014-11-13
 	* @afy0817 : afy0817@gmail.com
 	******************************************************************************/
-	public static List<HashMap<String,String>> fbArr(InputStream jsonCon,String encode){
-		return fbArr(jsonCon,encode,isSave);
+	public static List<FacebookVo> fbVo(InputStream jsonCon,String encode){
+		return fbVo(jsonCon,encode,isSave);
 	}
 
-	public static List<HashMap<String,String>> fbArr(InputStream jsonCon,String encode, boolean imgSave){
-		List<HashMap<String, String>> fblist = new ArrayList<HashMap<String,String>>();
+	public static List<FacebookVo> fbVo(InputStream jsonCon,String encode, boolean imgSave){
+		List<FacebookVo> fblist = new ArrayList<FacebookVo>();
 		JSONParser parser = new JSONParser();
 		StringBuilder sb = new StringBuilder();
 		String line;
@@ -133,26 +140,26 @@ public class FacebookJson{
 			for(int i = 0; i < dataArr.size(); i++){
 				String imgUrl = AfyUtil.toString("http://graph.facebook.com/"+((JSONObject) dataArr.get(i)).get("object_id"))+"/picture?type=normal";
 				String imgFileNm = AfyUtil.toString(((JSONObject) dataArr.get(i)).get("object_id"))+".jpg";
-				HashMap<String,String> fbArr = new HashMap<String,String>();
+				FacebookVo fbVo = new FacebookVo();
 				String[] linkArr = AfyUtil.toArray(AfyUtil.toString(((JSONObject)dataArr.get(i)).get("id")),"_");
 				if(((JSONObject)dataArr.get(i)).get("message")!=null){
-				fbArr.put("time",AfyUtil.toString(((JSONObject)dataArr.get(i)).get("created_time")));
-				fbArr.put("link",AfyUtil.toString("https://www.facebook.com/"+linkArr[0]+"/posts/"+linkArr[1]));
-				fbArr.put("message",AfyUtil.toString(((JSONObject)dataArr.get(i)).get("message")));
-				if(((JSONObject)dataArr.get(i)).get("object_id")!=null){
-					if(imgSave){
-						if(saveImg(savePath, imgUrl, imgFileNm)){
-							fbArr.put("image",savePath+imgFileNm);
+					fbVo.setReg_dt(AfyUtil.toTimestamp(AfyUtil.toString(((JSONObject)dataArr.get(i)).get("created_time")),"yyyy-MM-dd"));
+					fbVo.setFb_url(AfyUtil.toString("https://www.facebook.com/"+linkArr[0]+"/posts/"+linkArr[1]));
+					fbVo.setFb_content(AfyUtil.toString(((JSONObject)dataArr.get(i)).get("message")));
+					if(((JSONObject)dataArr.get(i)).get("object_id")!=null){
+						if(imgSave){
+							if(saveImg(savePath, imgUrl, imgFileNm)){
+								fbVo.setFb_img(savePath+imgFileNm);
+							}else{
+								fbVo.setFb_img("noImg");
+							}
 						}else{
-							fbArr.put("image","noImg");
+							fbVo.setFb_img(imgUrl);
 						}
 					}else{
-						fbArr.put("image",imgUrl);
+						fbVo.setFb_img("noImg");
 					}
-				}else{
-					fbArr.put("image","noImg");
-				}
-					fblist.add(fbArr);
+					fblist.add(fbVo);
 				}
 			}
 		}catch(Exception e){}

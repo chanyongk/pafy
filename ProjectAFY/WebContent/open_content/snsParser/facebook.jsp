@@ -1,13 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><%@
-page import="programs.sns.*"%><%@
+page import="programs.facebook.*"%><%@
 page import="java.io.*"%><%@
 page import="java.util.*"%><%@
 page import="org.json.simple.parser.*"%><%@
 page import="org.json.simple.*"%><%
 if(1==0){//Facebook img dir all Remove
-	FacebookJson.deleteFiles();
+	FacebookUtil.deleteFiles();
 }
-List<HashMap<String,String>> fblist = FacebookJson.getFacebookCon("https://graph.facebook.com/v2.2/afy0817?fields=picture,likes,posts.limit(10){message,link,object_id}&access_token=556185237786210|42a976250600e2f8fe3be94592082514",30000);
+List<FacebookVo> fblist = FacebookUtil.getFacebookCon();
 %>
 <html>
 <head>
@@ -15,17 +15,17 @@ List<HashMap<String,String>> fblist = FacebookJson.getFacebookCon("https://graph
 </html>
 <%if(fblist!=null){%>
 <div>
-	<%for(HashMap<String,String> fbArr : fblist){%>
+	<%for(FacebookVo fbVo : fblist){%>
 	<dl>
 		<dt>
 			<a title="새창열림" href="https://www.facebook.com/afy0817" target="_blank">ProjectAllForYou</a>
 		</dt>
 		<dd>
-			<a href="<%=fbArr.get("link")%>">
-				<%if(!fbArr.get("image").equals("noImg")){%>
-					<img src="<%=fbArr.get("image")%>"/><br/>
+			<a href="<%=fbVo.getFb_url()%>">
+				<%if(!fbVo.getFb_img().equals("noImg")){%>
+					<img src="<%=fbVo.getFb_img()%>"/><br/>
 				<%}%>
-				<%=fbArr.get("message")%> (<%=fbArr.get("time")%>)
+				<%=fbVo.getFb_content()%> (<%=fbVo.getReg_dt()%>)
 			</a>
 		</dd>
 	</dl>

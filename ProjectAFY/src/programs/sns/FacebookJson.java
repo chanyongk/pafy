@@ -17,6 +17,8 @@ import com.common.util.*;
 public class FacebookJson{
 	/******************************Image Save Path******************************/
 	private static String savePath = "D:/temp/";
+	private static Boolean isSave = false;
+	private static File file = new File(savePath);
 	/******************************************************************************
 	* 해당 디렉토리 파일 전체삭제
 	* @param String,String,String
@@ -25,14 +27,9 @@ public class FacebookJson{
 	* @afy0817 : afy0817@gmail.com
 	******************************************************************************/
 	public static void deleteFiles(){
-		File file = new File(savePath);
 		String[] fileList = file.list();
-		int fileCnt = fileList.length;
-		try{
-			for(int i = 0; i < fileCnt; i++) {
-				new File(savePath+fileList[i]).delete();
-			}
-		}catch(Exception e){
+		for(int i = 0; i < fileList.length; i++) {
+			new File(savePath+fileList[i]).delete();
 		}
 	}
 
@@ -113,12 +110,17 @@ public class FacebookJson{
 
 	/******************************************************************************
 	* urlCon 에서 받아온 값(Json형식)을 받아온 인코딩 값으로 파싱 후 List<HashMap<String,String>> 으로 리턴
-	* @param InputStream,String
+	* 
+	* @param InputStream,String,boolean
 	* @return List<HashMap<String,String>>
 	* @since 2014-11-13
 	* @afy0817 : afy0817@gmail.com
 	******************************************************************************/
 	public static List<HashMap<String,String>> fbArr(InputStream jsonCon,String encode){
+		return fbArr(jsonCon,encode,isSave);
+	}
+
+	public static List<HashMap<String,String>> fbArr(InputStream jsonCon,String encode, boolean imgSave){
 		List<HashMap<String, String>> fblist = new ArrayList<HashMap<String,String>>();
 		JSONParser parser = new JSONParser();
 		StringBuilder sb = new StringBuilder();
@@ -138,10 +140,14 @@ public class FacebookJson{
 				fbArr.put("link",AfyUtil.toString("https://www.facebook.com/"+linkArr[0]+"/posts/"+linkArr[1]));
 				fbArr.put("message",AfyUtil.toString(((JSONObject)dataArr.get(i)).get("message")));
 				if(((JSONObject)dataArr.get(i)).get("object_id")!=null){
-					if(saveImg(savePath, imgUrl, imgFileNm)){
-						fbArr.put("image",savePath+imgFileNm);
+					if(imgSave){
+						if(saveImg(savePath, imgUrl, imgFileNm)){
+							fbArr.put("image",savePath+imgFileNm);
+						}else{
+							fbArr.put("image","noImg");
+						}
 					}else{
-						fbArr.put("image","noImg");
+						fbArr.put("image",imgUrl);
 					}
 				}else{
 					fbArr.put("image","noImg");

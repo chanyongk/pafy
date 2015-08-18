@@ -18,7 +18,7 @@ List<HashMap<String,String>> fblist = FacebookJson.getFacebookCon("https://graph
 	<%for(HashMap<String,String> fbArr : fblist){%>
 	<dl>
 		<dt>
-			<a title="새창열림" href="http://facebook.com/noulnori" target="_blank">ProjectAllForYou</a>
+			<a title="새창열림" href="https://www.facebook.com/afy0817" target="_blank">ProjectAllForYou</a>
 		</dt>
 		<dd>
 			<a href="<%=fbArr.get("link")%>">
@@ -32,4 +32,5 @@ List<HashMap<String,String>> fblist = FacebookJson.getFacebookCon("https://graph
 	<%}%>
 </div>
 <%}else{%>
+데이터가 없따
 <%}%>

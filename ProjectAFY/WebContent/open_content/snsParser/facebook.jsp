@@ -4,7 +4,7 @@ page import="java.io.*"%><%@
 page import="java.util.*"%><%@
 page import="org.json.simple.parser.*"%><%@
 page import="org.json.simple.*"%><%
-if(1==0){//저장한 페이스북 경로의 파일 전체삭제
+if(1==0){//Facebook img dir all Remove
 	FacebookJson.deleteFiles();
 }
 List<HashMap<String,String>> fblist = FacebookJson.getFacebookCon("https://graph.facebook.com/v2.2/afy0817?fields=picture,likes,posts.limit(10){message,link,object_id}&access_token=556185237786210|42a976250600e2f8fe3be94592082514",30000);

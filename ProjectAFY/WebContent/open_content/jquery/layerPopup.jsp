@@ -7,16 +7,32 @@
 	<jsp:param value="jquery layer popup" name="title"/>
 	</jsp:include>
 <style type="text/css">
-	.lp {display:none; position: absolute; top: 50%; left: 50%; width: 410px; height:auto;  background-color:#fff; border: 5px solid #3571B5; z-index: 10;}
+	.lp{
+		display:none;
+		position:absolute;
+		top:50px;
+		left:50px;
+		width:410px;
+		height:auto;
+		background-color:#fff;
+		border:5px solid #3571B5;
+		z-index:10;
+	}
 </style>
 <script type="text/javascript">
 	function openPopup(layerId){
 		var layer = $("#"+layerId);//레이어 이름
 		
-		if(layer.outerHeight()<$(document).height()){layer.css("margin-top","-"+layer.outerHeight()/2+"px");}
-		else{layer.css("top","0px");}
-		if(layer.outerWidth()<$(document).width()){layer.css("margin-top","-"+layer.outerWidth()/2+"px");}
-		else{layer.css("left","0px");}
+		if(layer.outerHeight()<$(document).height()){
+			layer.css("margin-top","-"+layer.outerHeight()/2+"px");
+		}else{
+			layer.css("top","0px");
+		}
+		if(layer.outerWidth()<$(document).width()){
+			layer.css("margin-top","-"+layer.outerWidth()/2+"px");
+		}else{
+			layer.css("left","0px");
+		}
 		layer.fadeIn();
 
 		layer.find("#close").click(function(){

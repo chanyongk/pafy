@@ -1,0 +1,64 @@
+/* common */
+body{width:600px}
+
+body, div, ul, ol, li, p, input, a {padding:0px; margin:0px; list-style:none; font-family:gulim; font-size:16px; color:#555; text-decoration:none; line-height:150%; border:0px}
+dl, dt, dd { padding:0; margin:0; text-decoration:none; line-height:150%; border:0px }
+img{border:0px}
+a:hover{text-decoration:underline}
+
+.center{text-align:center}
+.padding_l20{padding-left:20px}
+.padding_l300{padding-left:300px}
+
+ul.tab li{float:left; height:55px;}
+p.txt{clear:both; height:38px; background:#434343; font-size:0px; }
+p.txt img{margin-top:13px; line-height:38px;}
+
+div.input{padding:35px 20px 25px; overflow:hidden}
+div.input input{float:left}
+div.input input[type=text]{margin-right:4px; padding:0px 10px; width:426px; height:37px; font-size:16px; font-weight:bold; color:#555; line-height:37px; border:2px solid #8f8f8f}
+
+div.result{padding:20px 15px; background:#f2f2f2 url(../images/lineT_bg.gif) repeat-x top left; height:390px; overflow-y:auto }
+div.result ul.list{padding:0px 10px; }
+div.result ul.list li{ position:relative; padding:10px 5px; border-top:1px solid #ccc }
+div.result ul.list li:first-child{ border-top:none }
+div.result ul.list li p.address { padding-right:80px; letter-spacing:-0.03em; }
+div.result ul.list li p.address a{ font-size:13px }
+div.result ul.list li p.address a span{ font-weight:bold; }
+div.result ul.list li p.btn{position:absolute; right:10px; top:17px;}
+
+div.result ul.list li dl.address { font-size:13px; width:87%; overflow:hidden; }
+div.result ul.list li dl.address a{  }
+div.result ul.list li dl.address dt{ font-weight:bold; float:left; width:11%; }
+div.result ul.list li dl.address dd{ width:87%; float:left; }
+
+div.result ul.list li dl.address a { font-size:13px; }
+
+div.pages {text-align:center; padding:10px 0 10px; background:#f2f2f2; border-top:1px solid #aaaaaa}
+div.pages p {display:inline; font-weight:bold; color:#2191c1;}
+
+p.now_page {margin:0 15px 10px; font-size:13px; }
+p.now_page span{color:#2191c1; font-weight:bold; }
+
+div.no_address {text-align:center; font-weight:bold;}
+
+div.wait{width:100%;height:100%;position:absolute;z-index:1;opacity:0.8;background-color:rgb(85, 85, 85);}
+div.icon span.text{font-weight: bold;font-size:21px;color:#000000;}
+div.icon{
+	position:absolute;
+	text-align:center;
+	width: 50%;
+	top:50%;
+	margin-left:25%;
+	height: 20px;
+	border: 1px solid #2980b9;
+	border-radius: 3px;
+	background-image:repeating-linear-gradient(-45deg,#2980b9,#2980b9 11px,#eee 10px,#eee 20px);
+	background-size: 28px 28px;
+	animation: move .7s linear infinite;
+}
+@keyframes move {
+	0%{background-position: 0 0;}
+	100%{background-position: 28px 0;}
+}
+

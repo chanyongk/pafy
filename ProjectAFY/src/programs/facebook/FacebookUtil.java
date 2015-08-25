@@ -23,8 +23,8 @@ import com.common.util.AfyUtil;
 public class FacebookUtil {
 	private static String savePath = "D:/temp/";//Save directory
 	private static Boolean isSave = false;//Save status
-	private static String appId = "556185237786210";
-	private static String fbSecretKey = "42a976250600e2f8fe3be94592082514";
+	private static String appId = "user-app-id";
+	private static String fbSecretKey = "user-secret-key";
 	private static String timelineJson = "https://graph.facebook.com/v2.2/afy0817?fields=picture,likes,posts.limit(10){message,link,object_id}&access_token="+appId+"|"+fbSecretKey;
 	private static int timeout = 3000;
 	private static File file = new File(savePath);

@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><%@
 page import="java.util.*" %><%@
-page import="com.common.util.*"%><%
+page import="com.common.util.*"%><%@
+page import="com.common.util.page.*"%><%
 request.setCharacterEncoding("UTF-8");
 List<Map<String,String>> zipcodeList = new ArrayList<Map<String,String>>();
 String page_btn_str = "";

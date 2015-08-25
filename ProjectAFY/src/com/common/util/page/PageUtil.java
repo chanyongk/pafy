@@ -1,4 +1,4 @@
-package com.common.util;
+package com.common.util.page;
 
 public class PageUtil {
 	/***************************************************
@@ -14,26 +14,18 @@ public class PageUtil {
 		PageVo pgVo = new PageVo();
 		if(nowPage<1){nowPage = 1;}
 		int endPage = nowPage*viewRecord;				
-		int startPage = endPage-(viewRecord-1);
-		if(endPage>totalCnt){endPage = totalCnt;}
 		int totalPage = totalCnt / viewRecord + (totalCnt % viewRecord>0 ? 1 : 0);
 		if(nowPage>totalPage){nowPage = totalPage;}
-		int nowGroup = nowPage/viewPage+(nowPage%viewPage>0?1:0);
-		int endNo = nowGroup*viewPage;		
+		int endNo = (nowPage/viewPage+(nowPage%viewPage>0?1:0))*viewPage;		
 		int startNo = endNo-(viewPage-1);	
-		if(endNo>totalPage){endNo=totalPage;}
-		int prevNo = startNo-viewPage;
-		int nextNo = startNo+viewPage;
-		if(prevNo<1){prevNo=1;}
-		if(nextNo>totalPage){nextNo=totalPage;}
 		pgVo.setTotalPage(totalPage);//전체 페이지
 		pgVo.setNowPage(nowPage);//현제 페이지
-		pgVo.setStartPage(startPage);//시작페이지
-		pgVo.setEndPage(endPage);//마지막페이지
+		pgVo.setStartPage(endPage-(viewRecord-1));//시작페이지
+		pgVo.setEndPage(endPage>totalCnt?totalCnt:endPage);//마지막페이지
 		pgVo.setStartNo(startNo);//현재그룹 시작번호
-		pgVo.setEndNo(endNo);//현재그룹 끝번호
-		pgVo.setPrevNo(prevNo);//이전페이지번호
-		pgVo.setNextNo(nextNo);//다음페이지번호
+		pgVo.setEndNo(endNo>totalPage?totalPage:endNo);//현재그룹 끝번호
+		pgVo.setPrevNo((startNo-viewPage)<1?1:(startNo-viewPage));//이전페이지번호
+		pgVo.setNextNo((startNo+viewPage)>totalPage?totalPage:(startNo+viewPage));//다음페이지번호
 		return pgVo;
 	}
 

@@ -3,8 +3,6 @@ package programs.sns;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,32 +15,6 @@ import com.common.util.AfyUtil;
 
 public class TistoryJson {
 	/******************************************************************************
-	* url 커넥션 설정 후 url에 대한 상태값이 200일때 url 내용을 리턴 그렇지 않을때 null 리턴
-	* @param String,int
-	* @return InputStream
-	* @since 2014-11-13
-	* @afy0817 : afy0817@gmail.com
-	******************************************************************************/
-	public static InputStream urlCon(String url,int timeout){
-		InputStream result = null;
-		try{
-			URL jsonUrl = new URL(url);
-			HttpURLConnection urlCon = (HttpURLConnection)jsonUrl.openConnection();
-			urlCon.setRequestMethod("GET");
-			urlCon.setUseCaches(false);
-			urlCon.setAllowUserInteraction(false);
-			urlCon.setConnectTimeout(timeout);
-			urlCon.setReadTimeout(timeout);
-			urlCon.connect();
-			if(urlCon.getResponseCode()==200){
-				result = urlCon.getInputStream();
-			}
-		}catch(Exception e){
-		}
-		return result;
-	}
-
-	/******************************************************************************
 	* urlCon 에서 받아온 값이 null 이 아닐때 받아온 값(json형식) 파싱 후 리턴
 	* @param String,int
 	* @return <HashMap<String,String>>
@@ -51,7 +23,8 @@ public class TistoryJson {
 	******************************************************************************/
 	public static HashMap<String,String> getTistoryContent(String url, int timeout){
 		HashMap<String, String> result = null;
-		if(urlCon(url,timeout)!=null){result=tistoryContentMap(urlCon(url,timeout),"UTF-8");}
+		InputStream urlContent = AfyUtil.urlCon(url,timeout);
+		if(urlContent!=null){result=tistoryContentMap(urlContent,"UTF-8");}
 		return result;
 	}
 
@@ -64,7 +37,8 @@ public class TistoryJson {
 	******************************************************************************/
 	public static List<HashMap<String,String>> getTistoryList(String url, int timeout){
 		List<HashMap<String, String>> result = null;
-		if(urlCon(url,timeout)!=null){result=tistoryListMap(urlCon(url,timeout),"UTF-8");}
+		InputStream urlContent = AfyUtil.urlCon(url,timeout);
+		if(urlContent!=null){result=tistoryListMap(urlContent,"UTF-8");}
 		return result;
 	}
 

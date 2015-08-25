@@ -1,5 +1,8 @@
 package com.common.util;
 
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -12,6 +15,32 @@ import javax.servlet.http.HttpServletRequest;
 
 public class AfyUtil {
 	private static String DEFAULT_ENCODING = "UTF-8";
+	private static String[] stamp_array = new String[]{"yyyy-MM-dd HH:mm:ss.SSS","yyyy-MM-dd HH:mm:ss","yyyy-MM-dd HH:mm","yyyy-MM-dd HH","yyyy-MM-dd","yyyyMMddHHmmssSSS","yyyyMMddHHmmss","yyyyMMddHHmm","yyyyMMddHH","yyyyMMdd"};
+	/******************************************************************************
+	* url 커넥션 설정 후 url에 대한 상태값이 200일때 url 내용을 리턴 그렇지 않을때 null 리턴
+	* @param String,int
+	* @return InputStream
+	* @since 2015-02-04
+	* @from afy0817@gmail.com
+	******************************************************************************/
+	public static InputStream urlCon(String url,int timeout){
+		InputStream result = null;
+		try{
+			URL jsonUrl = new URL(url);
+			HttpURLConnection urlCon = (HttpURLConnection)jsonUrl.openConnection();
+			urlCon.setRequestMethod("GET");
+			urlCon.setUseCaches(false);
+			urlCon.setAllowUserInteraction(false);
+			urlCon.setConnectTimeout(timeout);
+			urlCon.setReadTimeout(timeout);
+			urlCon.connect();
+			if(urlCon.getResponseCode()==200){
+				result = urlCon.getInputStream();
+			}
+		}catch(Exception e){}
+		return result;
+	}
+
 	public static String[] toArray(String str, String delim){
 		StringTokenizer st = new StringTokenizer(str, delim);
 		String[] result = new String[st.countTokens()];
@@ -21,37 +50,25 @@ public class AfyUtil {
 		}
 		return result;
 	}
+
 	public static String toString(String value){
 		return (value==null || value.trim().equals("") || value.equals("null"))? "" : value;
 	}
 	public static String toString(Object value){
 		return toString(value+"");
 	}
-	
+
 	public static Timestamp toTimestamp(String value) throws Exception{
-    	String[] stamp_array = new String[]{
-    			"yyyy-MM-dd HH:mm:ss.SSS",
-    			"yyyy-MM-dd HH:mm:ss",
-    			"yyyy-MM-dd HH:mm",
-    			"yyyy-MM-dd HH",
-    			"yyyy-MM-dd",
-    			"yyyyMMddHHmmssSSS",
-    			"yyyyMMddHHmmss",
-    			"yyyyMMddHHmm",
-    			"yyyyMMddHH",
-    			"yyyyMMdd"
-    		};	
     	Timestamp timestamp = null;
     	for(int i=0; i<stamp_array.length; i++){
     		try{
     			timestamp = toTimestamp(value, stamp_array[i]);
     		}catch(Exception e){}
-    		if(timestamp!=null){
-    			break;
-    		}		
+    		if(timestamp!=null){break;}		
     	}
     	return timestamp;
     }
+
 	public static Timestamp toTimestamp(String value, String type) throws Exception{
     	try{
     		return new java.sql.Timestamp(new SimpleDateFormat(type).parse(value).getTime());
@@ -59,26 +76,24 @@ public class AfyUtil {
     		return null;
     	}
     }
+
 	public static String replaceAll( String str, String s1, String s2 ){
 		str = toString(str);
 		if(s1!=null && s2!=null){
 			StringBuffer result = new StringBuffer();
 			if(s1.length()>0){
-				
 				String s = str.toLowerCase();
 				s1 = s1.toLowerCase();
 				s2 = s2.toLowerCase();
-		
 				int index1 = 0;
 				int index2 = s.indexOf(s1);
-		
 				while(index2 >= 0) {
-					result.append( str.substring(index1, index2) );
-					result.append( s2 );
+					result.append(str.substring(index1,index2));
+					result.append(s2);
 					index1 = index2 + s1.length();
 					index2 = s.indexOf(s1, index1);
 				}
-				result.append( str.substring( index1 ) );
+				result.append(str.substring(index1));
 			}else{
 				result.append(str);
 			}
@@ -87,6 +102,7 @@ public class AfyUtil {
 			return str;
 		}		
 	}
+
 	public static String toDateFormat (String value, String type){
     	try{
     		return value==null ? "" : new SimpleDateFormat(type).format(toDate(value));
@@ -94,19 +110,8 @@ public class AfyUtil {
     		return "";
     	}
     }
+
 	public static Date toDate(String value) throws Exception{
-    	String[] stamp_array = new String[]{
-    			"yyyy-MM-dd HH:mm:ss.SSS",
-    			"yyyy-MM-dd HH:mm:ss",
-    			"yyyy-MM-dd HH:mm",
-    			"yyyy-MM-dd HH",
-    			"yyyy-MM-dd",
-    			"yyyyMMddHHmmssSSS",
-    			"yyyyMMddHHmmss",
-    			"yyyyMMddHHmm",
-    			"yyyyMMddHH",
-    			"yyyyMMdd"
-    		};	
     	Date date = null;
     	for(int i=0; i<stamp_array.length; i++){
     		try{
@@ -118,6 +123,7 @@ public class AfyUtil {
     	}
     	return date;
     }
+
 	public static Date toDate(String value, String type) throws Exception{
     	try{
     		return new Date(new SimpleDateFormat(type).parse(value).getTime());
@@ -125,18 +131,23 @@ public class AfyUtil {
     		return null;
     	}
     }
+
 	public static String toString(HttpServletRequest request, String value){
 		return toStringMethodDivChange(request, toString(request.getParameter(value)));
 	}
+
 	public static String toStringHtml(HttpServletRequest request, String value){
 		return htmlSpecialChars(toString(request, value));
 	}
+
 	public static String toStringYmd(HttpServletRequest request, String value){
 		return toStringYmd(toString(request, value));
 	}
+
 	private static String toStringMethodDivChange(HttpServletRequest request, String value){
 		return toStringMethodDivChange(request.getContentType(), request.getMethod(), value);
 	}
+
 	private static String toStringMethodDivChange(String content_type, String form_type, String value){
 		if(toString(content_type).indexOf("multipart/form-data")>-1){ 	// multipart/form-data
 			return toKor(toString(value));	// Dev
@@ -146,6 +157,7 @@ public class AfyUtil {
 			return toString(value);			// Dev
 		}
 	}
+
 	public static String toKor(String value){
 		String str = "";
 		if(value!=null && !value.equals("")){
@@ -158,6 +170,7 @@ public class AfyUtil {
 		}
 		return str;
 	}
+
 	private static String htmlSpecialChars(String s){
 		StringBuffer buffer = new StringBuffer();
 		StringTokenizer st = new StringTokenizer(s, "&\"<>", true);
@@ -174,21 +187,26 @@ public class AfyUtil {
 		}
 		return buffer.toString();
 	}
+
 	public static String toStringYmd(String value){
 		String cfinput = "";
 		try{cfinput = new SimpleDateFormat("yyyy-MM-dd").format(Timestamp.valueOf(value + " 00:00:00"));}catch(Exception e){}
 		return value.equals(cfinput)&&cfinput.length()>0 ? toString(value) : "";
 	}
+
 	public static int toInt(HttpServletRequest request,String value,int revalue){
 		return toInt(request.getParameter(value),revalue);
 	}
+
 	public static int toInt(String value,int revalue){
 		int temp = toInt(value);
 		return temp!=0?temp:revalue;
 	}
+
 	public static int toInt(HttpServletRequest request,String value){
 		return toInt(request.getParameter(value));
 	}
+
 	public static int toInt(String value){
 		int to_int = 0;
 		try{to_int = Integer.parseInt(replaceAll(value,",",""));}catch(Exception e){}
@@ -198,6 +216,7 @@ public class AfyUtil {
 	public static String toString(HttpServletRequest request,String value,String revalue){
 		return toString(toString(request,value),revalue);
 	}
+
 	public static String toString(String value,String revalue){
 		return toString(value).length()>0?value:revalue;
 	}
@@ -215,6 +234,7 @@ public class AfyUtil {
 		}
 		return str_array;
 	}
+
 	public static String[] toStr_array(String value,String split_symbol){
 		return replaceAll(value,split_symbol,"##d##i##v##").split("##d##i##v##");
 	}
@@ -296,6 +316,7 @@ public class AfyUtil {
 		}
 		return param_value_str.toString();
 	}
+
 	public static String encode(String value,String encoding){
 		String result = "";
 		try{result = URLEncoder.encode(value,encoding);}catch (Exception e){e.printStackTrace();}
@@ -304,5 +325,4 @@ public class AfyUtil {
 	public static String encode(String value){
 		return encode(value,DEFAULT_ENCODING);
 	}
-
 }

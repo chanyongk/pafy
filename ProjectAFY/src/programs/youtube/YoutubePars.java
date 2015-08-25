@@ -2,8 +2,6 @@ package programs.youtube;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,32 +13,6 @@ import com.common.util.AfyUtil;
 
 public class YoutubePars{
 	/******************************************************************************
-	* url 커넥션 설정 후 url에 대한 상태값이 200일때 url 내용을 리턴 그렇지 않을때 null 리턴
-	* @param String,int
-	* @return InputStream
-	* @since 2015-02-04
-	* @from afy0817@gmail.com
-	******************************************************************************/
-	public static InputStream urlCon(String url,int timeout){
-		InputStream result = null;
-		try{
-			URL jsonUrl = new URL(url);
-			HttpURLConnection urlCon = (HttpURLConnection)jsonUrl.openConnection();
-			urlCon.setRequestMethod("GET");
-			urlCon.setUseCaches(false);
-			urlCon.setAllowUserInteraction(false);
-			urlCon.setConnectTimeout(timeout);
-			urlCon.setReadTimeout(timeout);
-			urlCon.connect();
-			if(urlCon.getResponseCode()==200){
-				result = urlCon.getInputStream();
-			}
-		}catch(Exception e){
-		}
-		return result;
-	}
-
-	/******************************************************************************
 	* urlCon 에서 받아온 값이 null 이 아닐때 받아온 값(Jsonc형식) 파싱 후 리턴
 	* @param String,int
 	* @return List<YoutubeVo>
@@ -50,8 +22,8 @@ public class YoutubePars{
 	public static List<YoutubeVo> getYoutubeCon(){
 		List<YoutubeVo> result = null;
 		String jsonLink = "https://www.googleapis.com/youtube/v3/activities?part=snippet&channelId=UCZQPmPXngA0smYk6BOyb1rw&maxResults=50&key=AIzaSyDY98G3a33QZqHCvHTqRtDLP4dEDA1MsEA";
-		if(urlCon(jsonLink,30000)!=null){result=ytList(urlCon(jsonLink,3000));}
-		
+		InputStream urlContent = AfyUtil.urlCon(jsonLink,30000);
+		if(urlContent!=null){result=ytList(urlContent);}
 		return result;
 	}
 
@@ -92,9 +64,9 @@ public class YoutubePars{
 				}
 			}
 		}catch(Exception e){}
-		if(pageToken!=null && !pageToken.equals("null") && pageToken.length()>0){
+		if(pageToken!=null && !pageToken.equals("null") && pageToken.length()>0){//다음페이지가 있을시 재귀호출 없을시 끝
 			String nextLink = "https://www.googleapis.com/youtube/v3/activities?part=snippet&channelId=UCZQPmPXngA0smYk6BOyb1rw&maxResults=50&key=AIzaSyDY98G3a33QZqHCvHTqRtDLP4dEDA1MsEA&pageToken="+pageToken;
-			InputStream nextCon = urlCon(nextLink,3000);
+			InputStream nextCon = AfyUtil.urlCon(nextLink,3000);
 			List<YoutubeVo> nextList = ytList(nextCon);
 			if(nextList.size()>0){result.addAll(nextList);}
 		}

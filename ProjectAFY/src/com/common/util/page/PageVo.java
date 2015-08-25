@@ -1,4 +1,4 @@
-package com.common.util;
+package com.common.util.page;
 
 public class PageVo {
 	private int totalPage;

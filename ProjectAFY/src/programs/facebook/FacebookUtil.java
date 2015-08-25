@@ -80,31 +80,6 @@ public class FacebookUtil {
 	}
 
 	/******************************************************************************
-	* url 커넥션 설정 후 url에 대한 상태값이 200일때 url 내용을 리턴 그렇지 않을때 null 리턴
-	* @return InputStream
-	* @since 2014-11-13
-	* @afy0817 : afy0817@gmail.com
-	******************************************************************************/
-	public static InputStream urlCon(){
-		InputStream result = null;
-		try{
-			URL jsonUrl = new URL(timelineJson);
-			HttpURLConnection urlCon = (HttpURLConnection)jsonUrl.openConnection();
-			urlCon.setRequestMethod("GET");
-			urlCon.setUseCaches(false);
-			urlCon.setAllowUserInteraction(false);
-			urlCon.setConnectTimeout(timeout);
-			urlCon.setReadTimeout(timeout);
-			urlCon.connect();
-			if(urlCon.getResponseCode()==200){
-				result = urlCon.getInputStream();
-			}
-		}catch(Exception e){
-		}
-		return result;
-	}
-
-	/******************************************************************************
 	* urlCon 에서 받아온 값이 null 이 아닐때 받아온 값(json형식) 파싱 후 리턴
 	* @return List<HashMap<String,String>>
 	* @since 2014-11-13
@@ -112,7 +87,8 @@ public class FacebookUtil {
 	******************************************************************************/
 	public static List<FacebookVo> getFacebookCon(){
 		List<FacebookVo> result = null;
-		if(urlCon()!=null){result=fbVo(urlCon(),"UTF-8");}
+		InputStream urlContent = AfyUtil.urlCon(timelineJson,timeout);
+		if(urlContent!=null){result=fbVo(urlContent,"UTF-8");}
 		return result;
 	}
 

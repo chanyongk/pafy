@@ -21,7 +21,7 @@ public class YoutubePars{
 	******************************************************************************/
 	public static List<YoutubeVo> getYoutubeCon(){
 		List<YoutubeVo> result = null;
-		String jsonLink = "https://www.googleapis.com/youtube/v3/activities?part=snippet&channelId=UCZQPmPXngA0smYk6BOyb1rw&maxResults=50&key=AIzaSyDY98G3a33QZqHCvHTqRtDLP4dEDA1MsEA";
+		String jsonLink = "https://www.googleapis.com/youtube/v3/activities?part=snippet&channelId=your-channel-id&maxResults=50&key=your-key";
 		InputStream urlContent = AfyUtil.urlCon(jsonLink,30000);
 		if(urlContent!=null){result=ytList(urlContent);}
 		return result;
@@ -65,7 +65,7 @@ public class YoutubePars{
 			}
 		}catch(Exception e){}
 		if(pageToken!=null && !pageToken.equals("null") && pageToken.length()>0){//다음페이지가 있을시 재귀호출 없을시 끝
-			String nextLink = "https://www.googleapis.com/youtube/v3/activities?part=snippet&channelId=UCZQPmPXngA0smYk6BOyb1rw&maxResults=50&key=AIzaSyDY98G3a33QZqHCvHTqRtDLP4dEDA1MsEA&pageToken="+pageToken;
+			String nextLink = "https://www.googleapis.com/youtube/v3/activities?part=snippet&channelId=yout-channel-id&maxResults=50&key=your-key&pageToken="+pageToken;
 			InputStream nextCon = AfyUtil.urlCon(nextLink,3000);
 			List<YoutubeVo> nextList = ytList(nextCon);
 			if(nextList.size()>0){result.addAll(nextList);}
